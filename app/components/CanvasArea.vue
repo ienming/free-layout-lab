@@ -18,7 +18,7 @@
 <script setup>
 const canvasStore = useCanvasStore();
 
-const canvas = ref(null);
+const canvas = useTemplateRef('canvas');
 let isDragging = false;
 let ctx = null;
 
@@ -44,11 +44,11 @@ function onMouseDown(e) {
 	const x = e.clientX - rect.left;
 	const y = e.clientY - rect.top;
 
-	canvasStore.selectedElementKey = [...canvasElements].reverse().find(el => el.isPointInside(x, y))?.key;
+	[...canvasElements].forEach(el => el.checkSelected(x, y));
+	canvasStore.selectedElementKey = [...canvasElements].reverse().find(el => el.selected)?.key;
 	if (canvasStore.selectedElementKey) {
 		offsetX = x - canvasStore.selectedElement.x;
 		offsetY = y - canvasStore.selectedElement.y;
-		console.log(canvasStore.selectedElement.color);
 		isDragging = true;
 	}
 }
@@ -70,7 +70,6 @@ function onMouseUp() {
 
 onMounted(() => {
 	ctx = canvas.value.getContext('2d');
-	drawAll();
 
 	canvas.value.addEventListener('mousedown', onMouseDown);
 	canvas.value.addEventListener('mousemove', onMouseMove);
