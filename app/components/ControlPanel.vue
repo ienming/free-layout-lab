@@ -1,6 +1,6 @@
 <template>
 	<div class="control-panel">
-		Now selected: {{ canvasStore.selectedElementKey || 'None' }}
+		Now selected: {{ canvasStore.selectedEl?.key || 'None' }}
 		<label>
 			Width:{{ width }}
 			<input
@@ -21,12 +21,12 @@
 		</label>
 		<button
 			class="btn-primary"
-			@click="sendToFront">
+			@click="canvasStore.sendToFront">
 			Send to front
 		</button>
 		<button
 			class="btn-primary"
-			@click="sendToBack">
+			@click="canvasStore.sendToBack">
 			Send to back
 		</button>
 		<button
@@ -43,24 +43,14 @@ import Element from '@/lib/canvasElement.js';
 const canvasStore = useCanvasStore();
 
 const width = computed({
-	get: () => canvasStore.selectedElement?.width || 0,
+	get: () => canvasStore.selectedEl?.width || 0,
 	set: val => canvasStore.updateElWidth(val),
 });
 
 const height = computed({
-	get: () => canvasStore.selectedElement?.height || 0,
+	get: () => canvasStore.selectedEl?.height || 0,
 	set: val => canvasStore.updateElHeight(val),
 });
-
-function sendToFront() {
-	if (!canvasStore.selectedElementKey) return;
-	canvasStore.sendToFront(canvasStore.selectedElementKey);
-}
-
-function sendToBack() {
-	if (!canvasStore.selectedElementKey) return;
-	canvasStore.sendToBack(canvasStore.selectedElementKey);
-}
 
 function addRect() {
 	const newEl = new Element({

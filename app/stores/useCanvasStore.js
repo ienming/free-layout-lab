@@ -2,39 +2,40 @@ const useCanvasStore = defineStore('canvas', {
     state: () => ({
         // Array of canvas elements
         elements: [],
-        selectedElementKey: null,
     }),
     getters: {
-        selectedElement(state) {
-            return state.elements.find(el => el.key === state.selectedElementKey) || null;
-        }
+        selectedEl(state) {
+            return state.elements.find(el => el.selected) || null;
+        },
     },
     actions: {
         addElement(element) {
             this.elements.push(element);
         },
         updateElWidth(value) {
-            if (this.selectedElement) {
-                const target = this.elements.find(el => el.key === this.selectedElementKey);
+            if (this.selectedEl) {
+                const target = this.elements.find(el => el.key === this.selectedEl.key);
                 target.width = value;
             }
         },
         updateElHeight(value) {
-            if (this.selectedElement) {
-                const target = this.elements.find(el => el.key === this.selectedElementKey);
+            if (this.selectedEl) {
+                const target = this.elements.find(el => el.key === this.selectedEl.key);
                 target.height = value;
             }
         },
-        sendToFront(key) {
-            const index = this.elements.findIndex(el => el.key === key);
+        sendToFront() {
+            if (!this.selectedEl) return;
+            const index = this.elements.findIndex(el => el.key === this.selectedEl.key);
             if (index === -1) return;
             if (index === this.elements.length - 1) return; // Already at front
 
             const [element] = this.elements.splice(index, 1);
             this.elements.push(element);
         },
-        sendToBack(key) {
-            const index = this.elements.findIndex(el => el.key === key);
+        sendToBack() {
+            if (!this.selectedEl) return;
+            const index = this.elements.findIndex(el => el.key === this.selectedEl.key);
             if (index === -1) return;
             if (index === 0) return; // Already at back
             

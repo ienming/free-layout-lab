@@ -4,7 +4,7 @@ export default class ControlHandler {
         this.y = y;
         this.type = type; // 'move', 'resize', 'rotate'
         this.name = name; // 'top-left', 'top-center', etc.
-        this.size = 8; // Control handle size
+        this.size = 12; // Control handle size
     }
 
     draw(ctx) {

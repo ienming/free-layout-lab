@@ -92,6 +92,10 @@ export default class Element {
 		});
 	}
 
+	checkControlHandlerHit(px, py) {
+		return this.controlHandlers.find(handler => handler.isPointInside(px, py));
+	}
+
 	checkSelected(px, py) {
 		this.selected =
 			px >= this.x && px <= this.x + this.width &&
