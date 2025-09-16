@@ -2,17 +2,17 @@ import ControlHandler from './controlHandler.js';
 import { CONTROLHANDLER_NAMES, CONTROLHANDLER_TYPES, ROTATE_CONTROLHANDLER_OFFSET } from '../constants/canvas.js';
 import { getAngleFromDegree, getLocalCoords } from './helper.js';
 export default class Element {
-	constructor({ key, type, x, y, width, height, color, content = '' }) {
+	constructor({ key, type, x, y, color }) {
 		this.key = key;
 		this.type = type;		// 'text' | 'rect' | 'circle'
 		this.cx = x;
 		this.cy = y;
-		this.width = width;
-		this.height = height;
-		this.color = color;
-		this.content = content;
+		this.color = color || {
+			default: '#' + Math.floor(Math.random()*16777215).toString(16),
+		};
 		this.rotationDeg = 0; //degree
 		this.selected = false;
+
 		this.controlHandlers = Object.values(CONTROLHANDLER_NAMES).map(name => {
 			return new ControlHandler({
 				x: 0,
@@ -37,14 +37,11 @@ export default class Element {
 	}
 
 	drawElement(ctx) {
-		if (this.type === 'rect') {
-			ctx.fillStyle = this.color.default;
-			ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
-		} else if (this.type === 'text') {
-			ctx.fillStyle = this.color.default;
-			ctx.font = `${this.height}px sans-serif`;
-			ctx.fillText(this.content, 0, 0);
-		}
+		throw new Error("drawElement() must be implemented in subclass");
+	}
+
+	isPointInside(px, py) {
+		throw new Error("isPointInside() must be implemented in subclass");
 	}
 
 	drawControlOutline(ctx) {
@@ -101,12 +98,5 @@ export default class Element {
 		const {localX, localY} = getLocalCoords(px, py, this.cx, this.cy, angle);
 
 		this.controlHandlers.forEach(handler => handler.isPointInside(localX, localY));
-	}
-
-	isPointInside(px, py) {
-		this.selected =
-			px >= this.cx - this.width / 2 && px <=	this.cx + this.width / 2 &&
-			py >= this.cy - this.height / 2 && py <= this.cy + this.height / 2;
-		return this.selected;
 	}
 }

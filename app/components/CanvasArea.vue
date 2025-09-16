@@ -5,13 +5,6 @@
 			width="800"
 			height="600"
 			style="border:1px solid #ccc;" />
-		<!-- <ul class="element-list">
-			<li
-				v-for="el of canvasElements"
-				:key="el.key">
-				{{ el }}
-			</li>
-		</ul> -->
 	</div>
 </template>
 
@@ -101,28 +94,30 @@ function onMouseUp() {
 	cancelAnimationFrame(animationFrameId);
 }
 
+function checkShortcut(e) {
+	console.log(e);
+	if (e.code === 'Backspace') {
+		canvasStore.removeEl();
+	} else if (e.code === 'BracketLeft') {
+		canvasStore.sendToBack();
+	} else if (e.code === 'BracketRight') {
+		canvasStore.sendToFront();
+	}
+}
+
 onMounted(() => {
 	ctx = canvas.value.getContext('2d');
 
 	canvas.value.addEventListener('mousedown', onMouseDown);
 	canvas.value.addEventListener('mousemove', onMouseMove);
 	canvas.value.addEventListener('mouseup', onMouseUp);
+	document.addEventListener('keydown', checkShortcut);
+})
+
+onUnmounted(() => {
+	canvas.value.removeEventListener('mousedown', onMouseDown);
+	canvas.value.removeEventListener('mousemove', onMouseMove);
+	canvas.value.removeEventListener('mouseup', onMouseUp);
+	document.removeEventListener('keydown', checkShortcut);
 })
 </script>
-
-<!-- <style lang="scss" scoped>
-.element-list {
-	position: fixed;
-	bottom: 8px;
-	left: 8px;
-	background: rgba(255, 255, 255, 0.8);
-	padding: 8px;
-	border-radius: 4px;
-	max-height: 200px;
-	overflow-y: auto;
-	list-style: none;
-	margin: 0;
-	padding: 0;
-	font-size: 12px;
-}
-</style> -->

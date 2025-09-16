@@ -54,9 +54,15 @@ function isLayerActive(key) {
         list-style: none;
         padding: 8px;
         border-radius: 4px;
+        cursor: pointer;
+
+        &:hover {
+            background-color: rgba(0, 0, 0, .05);
+        }
 
         &.active {
-            border: 1px solid #000;
+            background-color: rgba(0, 0, 0, .05);
+            border: 1px solid rgba(0, 0, 0, .15);
         }
     }
 }

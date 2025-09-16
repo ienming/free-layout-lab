@@ -122,11 +122,15 @@ const useCanvasStore = defineStore('canvas', {
 			this.elements.unshift(element);
 		},
 		removeEl() {
+			if (!this.selectedEl) return;
 			const index = this.elements.findIndex(el => el.key === this.selectedEl.key);
+			if (index === -1) return;
 			this.elements.splice(index, 1);
 		},
 		removeAll() {
-			this.elements.splice(0, this.elements.length);
+			if (window.confirm('清空畫布')) {
+				this.elements.splice(0, this.elements.length);
+			}
 		}
 	}
 });

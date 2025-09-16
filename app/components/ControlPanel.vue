@@ -34,7 +34,7 @@
 		<label for="color">
 			Color: {{ canvasStore.selectedEl?.color.default || 'undefined' }}
 			<ClientOnly>
-				<ChromePicker v-model="color" />
+				<SketchPicker v-model="color" />
 			</ClientOnly>
 		</label>
 		<button
@@ -54,6 +54,11 @@
 		</button>
 		<button
 			class="btn-primary"
+			@click="addText">
+			Add text
+		</button>
+		<button
+			class="btn-primary"
 			@click="canvasStore.removeEl">
 			Remove
 		</button>
@@ -66,8 +71,9 @@
 </template>
 
 <script setup>
-import Element from '@/lib/canvasElement.js';
-import { ChromePicker } from 'vue-color';
+import { SketchPicker } from 'vue-color';
+import RectElement from '~/lib/RectElement';
+import TextElement from '~/lib/TextElement';
 
 const canvasStore = useCanvasStore();
 
@@ -92,16 +98,22 @@ const color = computed({
 });
 
 function addRect() {
-	const newEl = new Element({
+	const newEl = new RectElement({
 		key: crypto.randomUUID(),
-		type: 'rect',
 		x: 50,
 		y: 50,
 		width: 100,
 		height: 100,
-		color: {
-			default: '#' + Math.floor(Math.random()*16777215).toString(16),
-		},
+	});
+	canvasStore.addEl(newEl);
+}
+
+function addText() {
+	const newEl = new TextElement({
+		key: crypto.randomUUID(),
+		x: 50,
+		y: 50,
+		content: '',
 	});
 	canvasStore.addEl(newEl);
 }
