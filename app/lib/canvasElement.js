@@ -38,10 +38,10 @@ export default class Element {
 
 	drawElement(ctx) {
 		if (this.type === 'rect') {
-			ctx.fillStyle = this.color;
+			ctx.fillStyle = this.color.default;
 			ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
 		} else if (this.type === 'text') {
-			ctx.fillStyle = this.color;
+			ctx.fillStyle = this.color.default;
 			ctx.font = `${this.height}px sans-serif`;
 			ctx.fillText(this.content, 0, 0);
 		}
@@ -108,9 +108,5 @@ export default class Element {
 			px >= this.cx - this.width / 2 && px <=	this.cx + this.width / 2 &&
 			py >= this.cy - this.height / 2 && py <= this.cy + this.height / 2;
 		return this.selected;
-	}
-
-	applyColor(newColor) {
-		this.color = newColor;
 	}
 }

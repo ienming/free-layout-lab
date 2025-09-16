@@ -2,6 +2,7 @@
 	<div class="container">
 		<CanvasArea :elements="canvasStore.elements" />
 		<ControlPanel />
+		<LayerPanel />
 	</div>
 </template>
 

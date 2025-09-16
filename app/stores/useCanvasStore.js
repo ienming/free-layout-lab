@@ -1,5 +1,5 @@
 import { CONTROLHANDLER_NAMES, EL_MINIMUM_SIZE } from "~/constants/canvas";
-import { getAngleFromDegree, getLocalCoords } from "~/lib/helper";
+import { getAngleFromDegree, getDegreeFromAngle, getLocalCoords } from "~/lib/helper";
 
 const useCanvasStore = defineStore('canvas', {
 	state: () => ({
@@ -20,6 +20,12 @@ const useCanvasStore = defineStore('canvas', {
 		clearSelectedEl() {
 			this.elements.forEach(el => el.selected = false);
 		},
+		setEl2Select(key) {
+			const target = this.elements.find(el => el.key === key);
+			if (!target) return;
+
+			target.selected = true;
+		},
 		clearActiveControlHandler() {
 			this.selectedEl?.controlHandlers.forEach(handler => handler.active = false);
 		},
@@ -39,6 +45,13 @@ const useCanvasStore = defineStore('canvas', {
 			if (this.selectedEl) {
 				const target = this.elements.find(el => el.key === this.selectedEl.key);
 				target.rotationDeg = value;
+			}
+		},
+		updateElColor(value) {
+			if (this.selectedEl) {
+				const target = this.elements.find(el => el.key === this.selectedEl.key);
+				console.log(value);
+				target.color.default = value;
 			}
 		},
 		resizeSelectedEl(posX, posY) {
@@ -71,10 +84,19 @@ const useCanvasStore = defineStore('canvas', {
 					halfW = Math.max(EL_MINIMUM_SIZE / 2, Math.abs(localX));
 					break;
 
-				// case CONTROLHANDLER_NAMES.ROTATE:
-				// 	const angleRad = Math.atan2(posY - cy, posX - cx);
-				// 	this.selectedEl.rotationDeg = angleRad * (180 / Math.PI);
-				// 	return;
+				case CONTROLHANDLER_NAMES.ROTATE:
+					// 1. 把滑鼠座標轉到元素中心
+					// const dx = posX - cx;
+					// const dy = posY - cy;
+
+					// // 2. 把旋轉反轉回 local 座標系
+					// const localX = dx * Math.cos(-angle) - dy * Math.sin(-angle);
+					// const localY = dx * Math.sin(-angle) + dy * Math.cos(-angle);
+
+					// // 3. 計算新的旋轉角度
+					// const newAngleRad = Math.atan2(localY, localX);
+					// this.selectedEl.rotationDeg = (newAngleRad * 180 / Math.PI + 360) % 360;
+					return;
 			}
 
 			// 更新 width / height，中心點不動

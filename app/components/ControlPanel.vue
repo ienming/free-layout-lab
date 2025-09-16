@@ -31,6 +31,12 @@
 				class="input"
 				:disabled="!canvasStore.selectedEl">
 		</label>
+		<label for="color">
+			Color: {{ canvasStore.selectedEl?.color.default || 'undefined' }}
+			<ClientOnly>
+				<ChromePicker v-model="color" />
+			</ClientOnly>
+		</label>
 		<button
 			class="btn-primary"
 			@click="canvasStore.sendToFront">
@@ -61,6 +67,7 @@
 
 <script setup>
 import Element from '@/lib/canvasElement.js';
+import { ChromePicker } from 'vue-color';
 
 const canvasStore = useCanvasStore();
 
@@ -79,6 +86,11 @@ const rotation = computed({
 	set: val => canvasStore.updateElRotation(val),
 });
 
+const color = computed({
+	get: () => canvasStore.selectedEl?.color.default || '#000000',
+	set: val => canvasStore.updateElColor(val),
+});
+
 function addRect() {
 	const newEl = new Element({
 		key: crypto.randomUUID(),
@@ -87,7 +99,9 @@ function addRect() {
 		y: 50,
 		width: 100,
 		height: 100,
-		color: '#' + Math.floor(Math.random()*16777215).toString(16),
+		color: {
+			default: '#' + Math.floor(Math.random()*16777215).toString(16),
+		},
 	});
 	canvasStore.addEl(newEl);
 }

@@ -6,7 +6,7 @@ export default class ControlHandler {
         this.cy = y;
         this.type = type; // 'resize', 'rotate'
         this.name = name; // 'top-left', 'top-center', etc.
-        this.size = 20; // Control handle size
+        this.size = 12; // Control handle size
         this.active = false;
     }
 

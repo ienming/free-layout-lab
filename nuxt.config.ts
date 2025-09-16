@@ -7,6 +7,11 @@ export default defineNuxtConfig({
     enabled: true,
   },
 
-  css: ['@/assets/index.scss'],
-  modules: ['@pinia/nuxt'],
+  css: [
+    '@/assets/index.scss',
+    'vue-color/style.css',
+  ],
+  modules: [
+    '@pinia/nuxt',
+  ],
 })
