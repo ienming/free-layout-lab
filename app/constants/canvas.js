@@ -16,4 +16,4 @@ export const CONTROLHANDLER_TYPES = {
 };
 
 export const EL_MINIMUM_SIZE = 20;
-export const ROTATE_CONTROLHANDLER_OFFSET = 80; // Distance above the top-center control handler
+export const ROTATE_CONTROLHANDLER_OFFSET = 50; // Distance above the top-center control handler

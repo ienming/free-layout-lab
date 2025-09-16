@@ -39,6 +39,16 @@
 			@click="addRect">
 			Add rectangle
 		</button>
+		<button
+			class="btn-primary"
+			@click="canvasStore.removeEl">
+			Remove
+		</button>
+		<button
+			class="btn-primary"
+			@click="canvasStore.removeAll">
+			Clear
+		</button>
 	</div>
 </template>
 
@@ -67,7 +77,7 @@ function addRect() {
 		height: 100,
 		color: '#' + Math.floor(Math.random()*16777215).toString(16),
 	});
-	canvasStore.addElement(newEl);
+	canvasStore.addEl(newEl);
 }
 </script>
 

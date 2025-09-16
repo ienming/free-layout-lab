@@ -6,7 +6,7 @@ export default class ControlHandler {
         this.y = y;
         this.type = type; // 'resize', 'rotate'
         this.name = name; // 'top-left', 'top-center', etc.
-        this.size = 12; // Control handle size
+        this.size = 10; // Control handle size
         this.active = false;
     }
 
@@ -14,7 +14,7 @@ export default class ControlHandler {
         ctx.save();
         ctx.translate(this.x, this.y);
 
-        ctx.fillStyle = 'blue';
+        ctx.fillStyle = '#333';
         if (this.type === CONTROLHANDLER_TYPES.ROTATE) {
             ctx.beginPath();
             ctx.arc(

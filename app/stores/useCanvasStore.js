@@ -13,10 +13,10 @@ const useCanvasStore = defineStore('canvas', {
 		},
 	},
 	actions: {
-		addElement(element) {
+		addEl(element) {
 			this.elements.push(element);
 		},
-		clearSelectedElement() {
+		clearSelectedEl() {
 			this.elements.forEach(el => el.selected = false);
 		},
 		clearActiveControlHandler() {
@@ -159,6 +159,13 @@ const useCanvasStore = defineStore('canvas', {
 
 			const [element] = this.elements.splice(index, 1);
 			this.elements.unshift(element);
+		},
+		removeEl() {
+			const index = this.elements.findIndex(el => el.key === this.selectedEl.key);
+			this.elements.splice(index, 1);
+		},
+		removeAll() {
+			this.elements.splice(0, this.elements.length);
 		}
 	}
 });

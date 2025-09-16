@@ -5,13 +5,13 @@
 			width="800"
 			height="600"
 			style="border:1px solid #ccc;" />
-		<ul class="element-list">
+		<!-- <ul class="element-list">
 			<li
 				v-for="el of canvasElements"
 				:key="el.key">
 				{{ el }}
 			</li>
-		</ul>
+		</ul> -->
 	</div>
 </template>
 
@@ -63,7 +63,7 @@ function onMouseDown(e) {
 	// 確認點到哪一個元素	
 	// 取消所有元素的選取狀態
 	canvasStore.clearActiveControlHandler();
-	canvasStore.clearSelectedElement();
+	canvasStore.clearSelectedEl();
 
 	// 從上到下檢查點擊位置是否在元素內
 	for (let i = canvasElements.length - 1; i >= 0; i--) {
@@ -110,7 +110,7 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<!-- <style lang="scss" scoped>
 .element-list {
 	position: fixed;
 	bottom: 8px;
@@ -125,4 +125,4 @@ onMounted(() => {
 	padding: 0;
 	font-size: 12px;
 }
-</style>
+</style> -->
