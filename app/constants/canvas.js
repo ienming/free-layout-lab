@@ -7,12 +7,13 @@ export const CONTROLHANDLER_NAMES = {
     BOTTOM_LEFT: 'bottom-left',
     BOTTOM_CENTER: 'bottom-center',
     BOTTOM_RIGHT: 'bottom-right',
+    ROTATE: 'rotate',
 };
 
 export const CONTROLHANDLER_TYPES = {
-    MOVE: 'move',
     RESIZE: 'resize',
     ROTATE: 'rotate',
 };
 
 export const EL_MINIMUM_SIZE = 20;
+export const ROTATE_CONTROLHANDLER_OFFSET = 80; // Distance above the top-center control handler

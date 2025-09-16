@@ -1,5 +1,6 @@
 import ControlHandler from './controlHandler.js';
-import { CONTROLHANDLER_NAMES, CONTROLHANDLER_TYPES } from '../constants/canvas.js';
+import { CONTROLHANDLER_NAMES, CONTROLHANDLER_TYPES, ROTATE_CONTROLHANDLER_OFFSET } from '../constants/canvas.js';
+import { getAngleFromDegree } from './helper.js';
 export default class Element {
 	constructor({ key, type, x, y, width, height, color, content = '' }) {
 		this.key = key;
@@ -10,13 +11,13 @@ export default class Element {
 		this.height = height;
 		this.color = color;
 		this.content = content;
-		this.rotation = 0;
+		this.rotation = 0; //degree
 		this.selected = false;
 		this.controlHandlers = Object.values(CONTROLHANDLER_NAMES).map(name => {
 			return new ControlHandler({
 				x: 0,
 				y: 0,
-				type: CONTROLHANDLER_TYPES.RESIZE,
+				type: name === CONTROLHANDLER_NAMES.ROTATE ? CONTROLHANDLER_TYPES.ROTATE : CONTROLHANDLER_TYPES.RESIZE,
 				name,
 			});
 		});
@@ -31,12 +32,12 @@ export default class Element {
 
 	drawElement(ctx) {
 		ctx.save();
-		ctx.translate(this.x, this.y);
-		ctx.rotate((this.rotation * Math.PI) / 180);
+		ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+		ctx.rotate(getAngleFromDegree(this.rotation));
 
 		if (this.type === 'rect') {
 			ctx.fillStyle = this.color;
-			ctx.fillRect(0, 0, this.width, this.height);
+			ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
 		} else if (this.type === 'text') {
 			ctx.fillStyle = this.color;
 			ctx.font = `${this.height}px sans-serif`;
@@ -82,14 +83,21 @@ export default class Element {
 					handler.x = x + width;
 					handler.y = y + height;
 					break;
+				case CONTROLHANDLER_NAMES.ROTATE:
+					handler.x = x + width / 2;
+					handler.y = y - ROTATE_CONTROLHANDLER_OFFSET;
+					break;
 			}
 			handler.draw(ctx);
 		});
 	}
 
 	checkControlHandlerHit(px, py) {
-		// return this.controlHandlers.find(handler => handler.isPointInside(px, py));
-		this.controlHandlers.forEach(handler => handler.isPointInside(px, py));
+		// 轉換成 element 中心點為原點的座標系
+		// 才能計算 control handler 正確位置
+		const relativeX = px;
+		const relaiveY = py;
+		this.controlHandlers.forEach(handler => handler.isPointInside(relativeX, relaiveY));
 	}
 
 	isPointInside(px, py) {

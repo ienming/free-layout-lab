@@ -21,6 +21,9 @@
 				class="input"
 				:disabled="!canvasStore.selectedEl" />
 		</label>
+		<label for="rotate">
+			Rotation: {{ canvasStore.selectedEl?.rotation || 0 }}°
+		</label>
 		<button
 			class="btn-primary"
 			@click="canvasStore.sendToFront">

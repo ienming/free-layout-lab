@@ -2,7 +2,6 @@ import { CONTROLHANDLER_NAMES, EL_MINIMUM_SIZE } from "~/constants/canvas";
 
 const useCanvasStore = defineStore('canvas', {
 	state: () => ({
-		// Array of canvas elements
 		elements: [],
 	}),
 	getters: {
@@ -41,6 +40,8 @@ const useCanvasStore = defineStore('canvas', {
 			const oldY = Math.abs(this.selectedEl.y);
 			const oldWidth = this.selectedEl.width;
 			const oldHeight = this.selectedEl.height;
+			const centerX = oldX + oldWidth / 2;
+			const centerY = oldY + oldHeight / 2;
 
 			switch (this.activeControlHandler.name) {
 				case CONTROLHANDLER_NAMES.TOP_LEFT:
@@ -133,6 +134,11 @@ const useCanvasStore = defineStore('canvas', {
 					if (this.selectedEl.height < EL_MINIMUM_SIZE) {
 						this.selectedEl.height = EL_MINIMUM_SIZE;
 					}
+					break;
+				case CONTROLHANDLER_NAMES.ROTATE:
+					const angle = Math.atan2(posY - centerY, posX - centerX);
+					const degrees = angle * (180 / Math.PI);
+					this.selectedEl.rotation = degrees;
 					break;
 			}
 		},
