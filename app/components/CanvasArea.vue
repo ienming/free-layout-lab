@@ -49,11 +49,11 @@ function renderLoop() {
 
 function onMouseDown(e) {
 	const rect = canvas.value.getBoundingClientRect();
-	const x = e.clientX - rect.left;
-	const y = e.clientY - rect.top;
+	const px = e.clientX - rect.left;
+	const py = e.clientY - rect.top;
 
 	// 確認是不是點到 control handler
-	canvasStore.selectedEl?.checkControlHandlerHit(x, y);
+	canvasStore.selectedEl?.checkControlHandlerHit(px, py);
 	if (canvasStore.activeControlHandler) {
 		console.log(canvasStore.selectedEl.key, canvasStore.activeControlHandler.name);
 		isControlHandlerStartDragging = true;
@@ -68,13 +68,13 @@ function onMouseDown(e) {
 	// 從上到下檢查點擊位置是否在元素內
 	for (let i = canvasElements.length - 1; i >= 0; i--) {
 		const el = canvasElements[i];
-		el.isPointInside(x, y);
+		el.isPointInside(px, py);
 		if (el.selected) break;
 	}
 
 	if (canvasStore.selectedEl) {
-		offsetX = x - canvasStore.selectedEl.x;
-		offsetY = y - canvasStore.selectedEl.y;
+		offsetX = px - canvasStore.selectedEl.cx;
+		offsetY = py - canvasStore.selectedEl.cy;
 		isElDragging = true;
 	}
 
@@ -83,15 +83,15 @@ function onMouseDown(e) {
 
 function onMouseMove(e) {
 	const rect = canvas.value.getBoundingClientRect();
-	const x = e.clientX - rect.left;
-	const y = e.clientY - rect.top;
+	const px = e.clientX - rect.left;
+	const py = e.clientY - rect.top;
 
 	// control handler 拖曳
 	if (isControlHandlerStartDragging) {
-		canvasStore.resizeSelectedEl(x, y);
+		canvasStore.resizeSelectedEl(px, py);
 	} else if (isElDragging) {
-		canvasStore.selectedEl.x = x - offsetX;
-		canvasStore.selectedEl.y = y - offsetY;
+		canvasStore.selectedEl.cx = px - offsetX;
+		canvasStore.selectedEl.cy = py - offsetY;
 	}
 }
 

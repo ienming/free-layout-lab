@@ -22,7 +22,14 @@
 				:disabled="!canvasStore.selectedEl" />
 		</label>
 		<label for="rotate">
-			Rotation: {{ canvasStore.selectedEl?.rotation || 0 }}°
+			Rotation: {{ canvasStore.selectedEl?.rotationDeg || 0 }}°
+			<input
+				v-model.number="rotation"
+				type="range"
+				min="0"
+				max="360"
+				class="input"
+				:disabled="!canvasStore.selectedEl">
 		</label>
 		<button
 			class="btn-primary"
@@ -65,6 +72,11 @@ const width = computed({
 const height = computed({
 	get: () => canvasStore.selectedEl?.height || 0,
 	set: val => canvasStore.updateElHeight(val),
+});
+
+const rotation = computed({
+	get: () => canvasStore.selectedEl?.rotationDeg || 0,
+	set: val => canvasStore.updateElRotation(val),
 });
 
 function addRect() {

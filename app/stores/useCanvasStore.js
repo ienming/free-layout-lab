@@ -1,4 +1,5 @@
 import { CONTROLHANDLER_NAMES, EL_MINIMUM_SIZE } from "~/constants/canvas";
+import { getAngleFromDegree, getLocalCoords } from "~/lib/helper";
 
 const useCanvasStore = defineStore('canvas', {
 	state: () => ({
@@ -34,113 +35,51 @@ const useCanvasStore = defineStore('canvas', {
 				target.height = value;
 			}
 		},
+		updateElRotation(value) {
+			if (this.selectedEl) {
+				const target = this.elements.find(el => el.key === this.selectedEl.key);
+				target.rotationDeg = value;
+			}
+		},
 		resizeSelectedEl(posX, posY) {
-			console.log('根據 control handler 的 name 來調整 selectedEl 的寬高');
-			const oldX = Math.abs(this.selectedEl.x);
-			const oldY = Math.abs(this.selectedEl.y);
-			const oldWidth = this.selectedEl.width;
-			const oldHeight = this.selectedEl.height;
-			const centerX = oldX + oldWidth / 2;
-			const centerY = oldY + oldHeight / 2;
+			if (!this.selectedEl) return;
+
+			const cx = this.selectedEl.cx;
+			const cy = this.selectedEl.cy;
+			const angle = getAngleFromDegree(this.selectedEl.rotationDeg);
+			const { localX, localY } = getLocalCoords(posX, posY, cx, cy, angle);
+
+			let halfW = this.selectedEl.width / 2;
+			let halfH = this.selectedEl.height / 2;
 
 			switch (this.activeControlHandler.name) {
 				case CONTROLHANDLER_NAMES.TOP_LEFT:
-					// width = width + (oldX - newX)
-					// height = height + (oldY - newY)
-					this.selectedEl.x = posX;
-					this.selectedEl.y = posY;
-					this.selectedEl.width = oldWidth + (oldX - posX);
-					this.selectedEl.height = oldHeight + (oldY - posY);
-					// 防止 width 或 height 變成負值
-					if (this.selectedEl.width < EL_MINIMUM_SIZE) {
-						this.selectedEl.width = EL_MINIMUM_SIZE;
-						this.selectedEl.x = oldX + oldWidth - EL_MINIMUM_SIZE;
-					}
-					if (this.selectedEl.height < EL_MINIMUM_SIZE) {
-						this.selectedEl.height = EL_MINIMUM_SIZE;
-						this.selectedEl.y = oldY + oldHeight - EL_MINIMUM_SIZE;
-					}
-					break;
-				case CONTROLHANDLER_NAMES.TOP_CENTER:
-					// height = height + (oldY - newY)
-					this.selectedEl.y = posY;
-					this.selectedEl.height = oldHeight + (oldY - posY);
-					if (this.selectedEl.height < EL_MINIMUM_SIZE) {
-						this.selectedEl.height = EL_MINIMUM_SIZE;
-						this.selectedEl.y = oldY + oldHeight - EL_MINIMUM_SIZE;
-					}
-					break;
 				case CONTROLHANDLER_NAMES.TOP_RIGHT:
-					// width = posX - oldX
-					// height = height + (oldY - posY)
-					this.selectedEl.width = posX - oldX;
-					this.selectedEl.y = posY;
-					this.selectedEl.height = oldHeight + (oldY - posY);
-					if (this.selectedEl.width < EL_MINIMUM_SIZE) {
-						this.selectedEl.width = EL_MINIMUM_SIZE;
-					}
-					if (this.selectedEl.height < EL_MINIMUM_SIZE) {
-						this.selectedEl.height = EL_MINIMUM_SIZE;
-						this.selectedEl.y = oldY + oldHeight - EL_MINIMUM_SIZE;
-					}
-					break;
-				case CONTROLHANDLER_NAMES.MIDDLE_LEFT:
-					// x = posX
-					// width = width + (oldX - posX)
-					this.selectedEl.x = posX;
-					this.selectedEl.width = oldWidth + (oldX - posX);
-					if (this.selectedEl.width < EL_MINIMUM_SIZE) {
-						this.selectedEl.width = EL_MINIMUM_SIZE;
-						this.selectedEl.x = oldX + oldWidth - EL_MINIMUM_SIZE;
-					}
-					break;
-				case CONTROLHANDLER_NAMES.MIDDLE_RIGHT:
-					// width = posX - oldX
-					this.selectedEl.width = posX - oldX;
-					if (this.selectedEl.width < EL_MINIMUM_SIZE) {
-						this.selectedEl.width = EL_MINIMUM_SIZE;
-					}
-					break;
 				case CONTROLHANDLER_NAMES.BOTTOM_LEFT:
-					// x = posX
-					// width = width + (oldX - posX)
-					// height = posY - oldY
-					this.selectedEl.x = posX;
-					this.selectedEl.width = oldWidth + (oldX - posX);
-					this.selectedEl.height = posY - oldY;
-					if (this.selectedEl.width < EL_MINIMUM_SIZE) {
-						this.selectedEl.width = EL_MINIMUM_SIZE;
-						this.selectedEl.x = oldX + oldWidth - EL_MINIMUM_SIZE;
-					}
-					if (this.selectedEl.height < EL_MINIMUM_SIZE) {
-						this.selectedEl.height = EL_MINIMUM_SIZE;
-					}
-					break;
-				case CONTROLHANDLER_NAMES.BOTTOM_CENTER:
-					// height = posY - oldY
-					this.selectedEl.height = posY - oldY;
-					if (this.selectedEl.height < EL_MINIMUM_SIZE) {
-						this.selectedEl.height = EL_MINIMUM_SIZE;
-					}
-					break;
 				case CONTROLHANDLER_NAMES.BOTTOM_RIGHT:
-					// width = posX - oldX
-					// height = posY - oldY
-					this.selectedEl.width = posX - oldX;
-					this.selectedEl.height = posY - oldY;
-					if (this.selectedEl.width < EL_MINIMUM_SIZE) {
-						this.selectedEl.width = EL_MINIMUM_SIZE;
-					}
-					if (this.selectedEl.height < EL_MINIMUM_SIZE) {
-						this.selectedEl.height = EL_MINIMUM_SIZE;
-					}
+					halfW = Math.max(EL_MINIMUM_SIZE / 2, Math.abs(localX));
+					halfH = Math.max(EL_MINIMUM_SIZE / 2, Math.abs(localY));
 					break;
-				case CONTROLHANDLER_NAMES.ROTATE:
-					const angle = Math.atan2(posY - centerY, posX - centerX);
-					const degrees = angle * (180 / Math.PI);
-					this.selectedEl.rotation = degrees;
+
+				case CONTROLHANDLER_NAMES.TOP_CENTER:
+				case CONTROLHANDLER_NAMES.BOTTOM_CENTER:
+					halfH = Math.max(EL_MINIMUM_SIZE / 2, Math.abs(localY));
 					break;
+
+				case CONTROLHANDLER_NAMES.MIDDLE_LEFT:
+				case CONTROLHANDLER_NAMES.MIDDLE_RIGHT:
+					halfW = Math.max(EL_MINIMUM_SIZE / 2, Math.abs(localX));
+					break;
+
+				// case CONTROLHANDLER_NAMES.ROTATE:
+				// 	const angleRad = Math.atan2(posY - cy, posX - cx);
+				// 	this.selectedEl.rotationDeg = angleRad * (180 / Math.PI);
+				// 	return;
 			}
+
+			// 更新 width / height，中心點不動
+			this.selectedEl.width = halfW * 2;
+			this.selectedEl.height = halfH * 2;
 		},
 		sendToFront() {
 			if (!this.selectedEl) return;
