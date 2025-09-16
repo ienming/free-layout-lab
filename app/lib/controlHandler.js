@@ -5,6 +5,7 @@ export default class ControlHandler {
         this.type = type; // 'move', 'resize', 'rotate'
         this.name = name; // 'top-left', 'top-center', etc.
         this.size = 12; // Control handle size
+        this.active = false;
     }
 
     draw(ctx) {
@@ -23,7 +24,8 @@ export default class ControlHandler {
     }
 
     isPointInside(px, py) {
-        return px >= this.x - this.size / 2 && px <= this.x + this.size / 2 &&
+        this.active = px >= this.x - this.size / 2 && px <= this.x + this.size / 2 &&
             py >= this.y - this.size / 2 && py <= this.y + this.size / 2;
+        return this.active;
     }
 }

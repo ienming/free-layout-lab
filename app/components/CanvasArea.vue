@@ -19,25 +19,32 @@
 const canvasStore = useCanvasStore();
 
 const canvas = useTemplateRef('canvas');
-let isDragging = false;
 let ctx = null;
+let offsetX = 0;
+let offsetY = 0;
+let isElDragging = false;
+let isControlHandlerStartDragging = false;
+let animationFrameId = null;
 
 // 建立元素
 const canvasElements = canvasStore.elements;
 
 watch(canvasElements, () => {
+	if (isElDragging) return;
 	drawAll();
 }, {
 	deep: true,
 });
 
-let offsetX = 0;
-let offsetY = 0;
-let isControlHandlerDragging = false;
-
 function drawAll() {
 	ctx.clearRect(0, 0, canvas.value.width, canvas.value.height);
 	canvasElements.forEach(el => el.draw(ctx));
+}
+
+function renderLoop() {
+	if (!isElDragging) return;
+	animationFrameId = requestAnimationFrame(renderLoop);
+	drawAll();
 }
 
 function onMouseDown(e) {
@@ -45,35 +52,33 @@ function onMouseDown(e) {
 	const x = e.clientX - rect.left;
 	const y = e.clientY - rect.top;
 
-	// TODO: 確認是不是點到 control handler
-	const result = canvasStore.selectedEl?.checkControlHandlerHit(x, y)?.name;
-		// ? canvas.value.style.cursor = 'nwse-resize'
-		// : canvas.value.style.cursor = 'move';
-	if (result) {
-		console.log(result, canvasStore.selectedEl.key);
-		isControlHandlerDragging = true;
+	// 確認是不是點到 control handler
+	canvasStore.selectedEl?.checkControlHandlerHit(x, y);
+	if (canvasStore.activeControlHandler) {
+		console.log(canvasStore.selectedEl.key, canvasStore.activeControlHandler.name);
+		isControlHandlerStartDragging = true;
 		return;
 	}
 
+	// 確認點到哪一個元素	
 	// 取消所有元素的選取狀態
-	for (let i = 0; i < canvasElements.length; i++) {
-		const el = canvasElements[i];
-		el.selected = false;
-		el.controlHandlers.forEach(handler => handler.selected = false);
-	}
+	canvasStore.clearActiveControlHandler();
+	canvasStore.clearSelectedElement();
 
 	// 從上到下檢查點擊位置是否在元素內
 	for (let i = canvasElements.length - 1; i >= 0; i--) {
 		const el = canvasElements[i];
-		el.checkSelected(x, y);
+		el.isPointInside(x, y);
 		if (el.selected) break;
 	}
 
 	if (canvasStore.selectedEl) {
 		offsetX = x - canvasStore.selectedEl.x;
 		offsetY = y - canvasStore.selectedEl.y;
-		isDragging = true;
+		isElDragging = true;
 	}
+
+	renderLoop();
 }
 
 function onMouseMove(e) {
@@ -81,14 +86,19 @@ function onMouseMove(e) {
 	const x = e.clientX - rect.left;
 	const y = e.clientY - rect.top;
 
-	if (!isDragging) return;
-
-	canvasStore.selectedEl.x = x - offsetX;
-	canvasStore.selectedEl.y = y - offsetY;
+	// control handler 拖曳
+	if (isControlHandlerStartDragging) {
+		canvasStore.resizeSelectedEl(x, y);
+	} else if (isElDragging) {
+		canvasStore.selectedEl.x = x - offsetX;
+		canvasStore.selectedEl.y = y - offsetY;
+	}
 }
 
 function onMouseUp() {
-	isDragging = false;
+	isElDragging = false;
+	isControlHandlerStartDragging = false;
+	cancelAnimationFrame(animationFrameId);
 }
 
 onMounted(() => {

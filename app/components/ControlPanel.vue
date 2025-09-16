@@ -8,7 +8,8 @@
 				type="range"
 				min="10"
 				max="200"
-				class="input" />
+				class="input"
+				:disabled="!canvasStore.selectedEl" />
 		</label>
 		<label>
 			Height: {{ height }}
@@ -17,7 +18,8 @@
 				type="range"
 				min="10"
 				max="200"
-				class="input" />
+				class="input"
+				:disabled="!canvasStore.selectedEl" />
 		</label>
 		<button
 			class="btn-primary"

@@ -1,14 +1,9 @@
 import ControlHandler from './controlHandler.js';
+import { CONTROLHANDLER_NAMES, CONTROLHANDLER_TYPES } from '../constants/canvas.js';
 export default class Element {
-	static controlHandlersKeys = [
-		'top-left', 'top-center', 'top-right',
-		'middle-left', 'middle-right',
-		'bottom-left', 'bottom-center', 'bottom-right'
-	];
-
 	constructor({ key, type, x, y, width, height, color, content = '' }) {
 		this.key = key;
-		this.type = type;      // 'text' | 'rect' | 'circle'
+		this.type = type;		// 'text' | 'rect' | 'circle'
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -17,14 +12,14 @@ export default class Element {
 		this.content = content;
 		this.rotation = 0;
 		this.selected = false;
-		this.controlHandlers = Element.controlHandlersKeys.map((key, i) => {
-            return new ControlHandler({
-                x,
-                y,
-                type: 'resize',
-                name: key,
-            })
-        });
+		this.controlHandlers = Object.values(CONTROLHANDLER_NAMES).map(name => {
+			return new ControlHandler({
+				x: 0,
+				y: 0,
+				type: CONTROLHANDLER_TYPES.RESIZE,
+				name,
+			});
+		});
 	}
 
 	draw(ctx) {
@@ -55,35 +50,35 @@ export default class Element {
 		const { x, y, width, height } = this;
 		this.controlHandlers.forEach(handler => {
 			switch (handler.name) {
-				case 'top-left':
+				case CONTROLHANDLER_NAMES.TOP_LEFT:
 					handler.x = x;
 					handler.y = y;
 					break;
-				case 'top-center':
+				case CONTROLHANDLER_NAMES.TOP_CENTER:
 					handler.x = x + width / 2;
 					handler.y = y;
 					break;
-				case 'top-right':
+				case CONTROLHANDLER_NAMES.TOP_RIGHT:
 					handler.x = x + width;
 					handler.y = y;
 					break;
-				case 'middle-left':
+				case CONTROLHANDLER_NAMES.MIDDLE_LEFT:
 					handler.x = x;
 					handler.y = y + height / 2;
 					break;
-				case 'middle-right':
+				case CONTROLHANDLER_NAMES.MIDDLE_RIGHT:
 					handler.x = x + width;
 					handler.y = y + height / 2;
 					break;
-				case 'bottom-left':
+				case CONTROLHANDLER_NAMES.BOTTOM_LEFT:
 					handler.x = x;
 					handler.y = y + height;
 					break;
-				case 'bottom-center':
+				case CONTROLHANDLER_NAMES.BOTTOM_CENTER:
 					handler.x = x + width / 2;
 					handler.y = y + height;
 					break;
-				case 'bottom-right':
+				case CONTROLHANDLER_NAMES.BOTTOM_RIGHT:
 					handler.x = x + width;
 					handler.y = y + height;
 					break;
@@ -93,10 +88,11 @@ export default class Element {
 	}
 
 	checkControlHandlerHit(px, py) {
-		return this.controlHandlers.find(handler => handler.isPointInside(px, py));
+		// return this.controlHandlers.find(handler => handler.isPointInside(px, py));
+		this.controlHandlers.forEach(handler => handler.isPointInside(px, py));
 	}
 
-	checkSelected(px, py) {
+	isPointInside(px, py) {
 		this.selected =
 			px >= this.x && px <= this.x + this.width &&
 			py >= this.y && py <= this.y + this.height;
