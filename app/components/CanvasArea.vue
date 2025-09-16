@@ -2,16 +2,19 @@
 	<div>
 		<canvas
 			ref="canvas"
-			width="800"
-			height="600"
-			style="border:1px solid #ccc;" />
+			:width="CANVAS_WIDTH"
+			:height="CANVAS_HEIGHT"
+			class="canvas" />
 	</div>
 </template>
 
 <script setup>
+import { CANVAS_UI } from '~/constants/canvas';
+
 const canvasStore = useCanvasStore();
 
 const canvas = useTemplateRef('canvas');
+const [CANVAS_WIDTH, CANVAS_HEIGHT] = [CANVAS_UI.WIDTH, CANVAS_UI.HEIGHT];
 let ctx = null;
 let offsetX = 0;
 let offsetY = 0;
@@ -30,7 +33,8 @@ watch(canvasElements, () => {
 });
 
 function drawAll() {
-	ctx.clearRect(0, 0, canvas.value.width, canvas.value.height);
+	ctx.fillStyle = CANVAS_UI.BG_COLOR;
+	ctx.fillRect(0, 0, canvas.value.width, canvas.value.height);
 	canvasElements.forEach(el => el.draw(ctx));
 }
 
@@ -107,6 +111,7 @@ function checkShortcut(e) {
 
 onMounted(() => {
 	ctx = canvas.value.getContext('2d');
+	drawAll();
 
 	canvas.value.addEventListener('mousedown', onMouseDown);
 	canvas.value.addEventListener('mousemove', onMouseMove);
@@ -121,3 +126,10 @@ onUnmounted(() => {
 	document.removeEventListener('keydown', checkShortcut);
 })
 </script>
+
+<style lang="scss" scoped>
+.canvas {
+	border-radius: 12px;
+	border:1px solid #333;
+}
+</style>

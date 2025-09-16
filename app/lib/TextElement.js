@@ -6,7 +6,7 @@ export default class TextElement extends Element {
 
 		this.width = 0;
 		this.height = 0;
-		this.content = props.content || 'Text Element';
+		this.content = props.content || 'Layout lab';
 		this.fontFamily = props.fontFamily || 'sans-serif';
 		this.fontSize = props.fontSize || 30; // height 當作初始 fontSize
 	}
@@ -21,6 +21,10 @@ export default class TextElement extends Element {
 
 		// TEST
 		this.updateTextMetrics(ctx);
+	}
+
+	drawControlHandlers(ctx) {
+		return;
 	}
 
 	isPointInside(px, py) {

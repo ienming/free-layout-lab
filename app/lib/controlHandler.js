@@ -1,4 +1,4 @@
-import { CONTROLHANDLER_TYPES } from "~/constants/canvas";
+import { CONTROLHANDLER_TYPES, CONTROLHANDER_UI } from "~/constants/canvas";
 
 export default class ControlHandler {
     constructor({ x, y, type, name}) {
@@ -6,12 +6,12 @@ export default class ControlHandler {
         this.cy = y;
         this.type = type; // 'resize', 'rotate'
         this.name = name; // 'top-left', 'top-center', etc.
-        this.size = 12; // Control handle size
+        this.size = CONTROLHANDER_UI.SIZE;
         this.active = false;
     }
 
     draw(ctx) {
-        ctx.fillStyle = '#333';
+        ctx.fillStyle = CONTROLHANDER_UI.COLOR;
         if (this.type === CONTROLHANDLER_TYPES.ROTATE) {
             ctx.beginPath();
             ctx.arc(

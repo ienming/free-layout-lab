@@ -1,12 +1,12 @@
 import ControlHandler from './controlHandler.js';
-import { CONTROLHANDLER_NAMES, CONTROLHANDLER_TYPES, ROTATE_CONTROLHANDLER_OFFSET } from '../constants/canvas.js';
+import { CANVAS_UI, CONTROLHANDER_UI, CONTROLHANDLER_NAMES, CONTROLHANDLER_TYPES, ROTATE_CONTROLHANDLER_OFFSET } from '../constants/canvas.js';
 import { getAngleFromDegree, getLocalCoords } from './helper.js';
 export default class Element {
 	constructor({ key, type, x, y, color }) {
-		this.key = key;
+		this.key = key || crypto.randomUUID();
 		this.type = type;		// 'text' | 'rect' | 'circle'
-		this.cx = x;
-		this.cy = y;
+		this.cx = x || CANVAS_UI.WIDTH / 2;
+		this.cy = y || CANVAS_UI.HEIGHT / 2;
 		this.color = color || {
 			default: '#' + Math.floor(Math.random()*16777215).toString(16),
 		};
@@ -30,7 +30,8 @@ export default class Element {
 
 		this.drawElement(ctx);
 		if (this.selected) {
-			this.drawControlOutline(ctx);
+			this.drawOutline(ctx);
+			this.drawControlHandlers(ctx);
 		}
 
 		ctx.restore();
@@ -40,55 +41,24 @@ export default class Element {
 		throw new Error("drawElement() must be implemented in subclass");
 	}
 
-	isPointInside(px, py) {
-		throw new Error("isPointInside() must be implemented in subclass");
+	drawOutline(ctx) {
+		ctx.lineWidth = CONTROLHANDER_UI.LINE_WIDTH;
+		ctx.strokeStyle = CONTROLHANDER_UI.COLOR;
+		ctx.beginPath();
+		ctx.moveTo(-this.width / 2, -this.height / 2);
+		ctx.lineTo(this.width / 2, -this.height / 2);
+		ctx.lineTo(this.width / 2, this.height / 2);
+		ctx.lineTo(-this.width / 2, this.height / 2);
+		ctx.closePath();
+		ctx.stroke();
 	}
 
-	drawControlOutline(ctx) {
-		// 在 local 座標中畫控制軸
-		// 所以相對於整個元素的中心點 (0,0)
-		const { width, height } = this;
-		this.controlHandlers.forEach(handler => {
-			switch (handler.name) {
-				case CONTROLHANDLER_NAMES.TOP_LEFT:
-					handler.cx = -width / 2;
-					handler.cy = -height / 2;
-					break;
-				case CONTROLHANDLER_NAMES.TOP_CENTER:
-					handler.cx = 0;
-					handler.cy = -height / 2;
-					break;
-				case CONTROLHANDLER_NAMES.TOP_RIGHT:
-					handler.cx = width / 2;
-					handler.cy = -height / 2;
-					break;
-				case CONTROLHANDLER_NAMES.MIDDLE_LEFT:
-					handler.cx = -width / 2;
-					handler.cy = 0;
-					break;
-				case CONTROLHANDLER_NAMES.MIDDLE_RIGHT:
-					handler.cx = width / 2;
-					handler.cy = 0;
-					break;
-				case CONTROLHANDLER_NAMES.BOTTOM_LEFT:
-					handler.cx = -width / 2;
-					handler.cy = height / 2;
-					break;
-				case CONTROLHANDLER_NAMES.BOTTOM_CENTER:
-					handler.cx = 0;
-					handler.cy = height / 2;
-					break;
-				case CONTROLHANDLER_NAMES.BOTTOM_RIGHT:
-					handler.cx = width / 2;
-					handler.cy = height / 2;
-					break;
-				case CONTROLHANDLER_NAMES.ROTATE:
-					handler.cx = 0;
-					handler.cy = -height / 2 - ROTATE_CONTROLHANDLER_OFFSET;
-					break;
-			}
-			handler.draw(ctx);
-		});
+	drawControlHandlers(ctx) {
+		throw new Error("drawControlHandlers() must be implemented in subclass");
+	}
+
+	isPointInside(px, py) {
+		throw new Error("isPointInside() must be implemented in subclass");
 	}
 
 	checkControlHandlerHit(px, py) {

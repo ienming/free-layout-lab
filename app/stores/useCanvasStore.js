@@ -41,6 +41,18 @@ const useCanvasStore = defineStore('canvas', {
 				target.height = value;
 			}
 		},
+		updateTextContent(value) {
+			if (this.selectedEl) {
+				const target = this.elements.find(el => el.key === this.selectedEl.key);
+				target.content = value;
+			}
+		},
+		updateFontSize(value) {
+			if (this.selectedEl) {
+				const target = this.elements.find(el => el.key === this.selectedEl.key);
+				target.fontSize = value;
+			}
+		},
 		updateElRotation(value) {
 			if (this.selectedEl) {
 				const target = this.elements.find(el => el.key === this.selectedEl.key);
@@ -56,6 +68,12 @@ const useCanvasStore = defineStore('canvas', {
 		},
 		resizeSelectedEl(posX, posY) {
 			if (!this.selectedEl) return;
+
+			// TEST
+			if (this.selectedEl.type === 'text') {
+				console.log('文字不支援縮放大小');
+				return;
+			}
 
 			const cx = this.selectedEl.cx;
 			const cy = this.selectedEl.cy;
@@ -122,6 +140,7 @@ const useCanvasStore = defineStore('canvas', {
 			this.elements.unshift(element);
 		},
 		removeEl() {
+			if (document.activeElement.tagName.toLowerCase() === 'input') return;
 			if (!this.selectedEl) return;
 			const index = this.elements.findIndex(el => el.key === this.selectedEl.key);
 			if (index === -1) return;

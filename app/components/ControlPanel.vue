@@ -1,66 +1,89 @@
 <template>
 	<div class="control-panel">
 		Now selected: {{ canvasStore.selectedEl?.key || 'None' }}
-		<label>
-			Width:{{ width }}
-			<input
-				v-model.number="width"
-				type="range"
-				min="10"
-				max="200"
-				class="input"
-				:disabled="!canvasStore.selectedEl" />
-		</label>
-		<label>
-			Height: {{ height }}
-			<input
-				v-model.number="height"
-				type="range"
-				min="10"
-				max="200"
-				class="input"
-				:disabled="!canvasStore.selectedEl" />
-		</label>
-		<label for="rotate">
-			Rotation: {{ canvasStore.selectedEl?.rotationDeg || 0 }}°
-			<input
-				v-model.number="rotation"
-				type="range"
-				min="0"
-				max="360"
-				class="input"
-				:disabled="!canvasStore.selectedEl">
-		</label>
-		<label for="color">
-			Color: {{ canvasStore.selectedEl?.color.default || 'undefined' }}
-			<ClientOnly>
-				<SketchPicker v-model="color" />
-			</ClientOnly>
-		</label>
+		<div v-if="canvasStore.selectedEl">
+			<div v-if="canvasStore.selectedEl.type === 'rect'">
+				<label>
+					Width:{{ width }}
+					<input
+						v-model.number="width"
+						type="range"
+						min="10"
+						max="200"
+						class="input"/>
+				</label>
+				<label>
+					Height: {{ height }}
+					<input
+						v-model.number="height"
+						type="range"
+						min="10"
+						max="200"
+						class="input"/>
+				</label>
+			</div>
+			<div v-if="canvasStore.selectedEl.type === 'text'">
+				font-size, font-family...
+				<label for="content">
+					Content
+					<input
+						v-model="content"
+						type="text"
+						class="input" />
+				</label>
+				<label for="fontSize">
+					FontSize
+					<input
+						v-model="fontSize"
+						type="number"
+						class="input" />
+				</label>
+			</div>
+			<label for="rotate">
+				Rotation: {{ canvasStore.selectedEl?.rotationDeg || 0 }}°
+				<input
+					v-model.number="rotation"
+					type="range"
+					min="0"
+					max="360"
+					class="input">
+			</label>
+			<label for="color">
+				Color: {{ canvasStore.selectedEl?.color.default || 'undefined' }}
+				<ClientOnly>
+					<ChromePicker v-model="color" />
+				</ClientOnly>
+			</label>
+			<button
+				class="btn-primary"
+				@click="canvasStore.sendToFront">
+				Send to front
+			</button>
+			<button
+				class="btn-primary"
+				@click="canvasStore.sendToBack">
+				Send to back
+			</button>
+			<button
+				class="btn-primary"
+				@click="canvasStore.removeEl">
+				Remove
+			</button>
+		</div>
 		<button
 			class="btn-primary"
-			@click="canvasStore.sendToFront">
-			Send to front
-		</button>
-		<button
-			class="btn-primary"
-			@click="canvasStore.sendToBack">
-			Send to back
-		</button>
-		<button
-			class="btn-primary"
-			@click="addRect">
+			@click="addGeometry('rect')">
 			Add rectangle
+		</button>
+		<button
+			class="btn-primary"
+			@click="addGeometry('circle')">
+			Add circle
 		</button>
 		<button
 			class="btn-primary"
 			@click="addText">
 			Add text
-		</button>
-		<button
-			class="btn-primary"
-			@click="canvasStore.removeEl">
-			Remove
 		</button>
 		<button
 			class="btn-primary"
@@ -71,8 +94,8 @@
 </template>
 
 <script setup>
-import { SketchPicker } from 'vue-color';
-import RectElement from '~/lib/RectElement';
+import { ChromePicker } from 'vue-color';
+import GeometryElement from '~/lib/GeometryElement';
 import TextElement from '~/lib/TextElement';
 
 const canvasStore = useCanvasStore();
@@ -87,6 +110,16 @@ const height = computed({
 	set: val => canvasStore.updateElHeight(val),
 });
 
+const content = computed({
+	get: () => canvasStore.selectedEl?.content || '',
+	set: val => canvasStore.updateTextContent(val),
+});
+
+const fontSize = computed({
+	get: () => canvasStore.selectedEl?.fontSize || '',
+	set: val => canvasStore.updateFontSize(val),
+});
+
 const rotation = computed({
 	get: () => canvasStore.selectedEl?.rotationDeg || 0,
 	set: val => canvasStore.updateElRotation(val),
@@ -97,24 +130,15 @@ const color = computed({
 	set: val => canvasStore.updateElColor(val),
 });
 
-function addRect() {
-	const newEl = new RectElement({
-		key: crypto.randomUUID(),
-		x: 50,
-		y: 50,
-		width: 100,
-		height: 100,
+function addGeometry(type) {
+	const newEl = new GeometryElement({
+		type,
 	});
 	canvasStore.addEl(newEl);
 }
 
 function addText() {
-	const newEl = new TextElement({
-		key: crypto.randomUUID(),
-		x: 50,
-		y: 50,
-		content: '',
-	});
+	const newEl = new TextElement({});
 	canvasStore.addEl(newEl);
 }
 </script>
@@ -124,7 +148,9 @@ function addText() {
 	position: fixed;
 	right: 8px;
 	top: 8px;
-	width: 300px;
+	width: 200px;
+	height: calc(100vh - 16px);
+	overflow-y: scroll;
 	display: flex;
 	flex-direction: column;
 	gap: 12px;
