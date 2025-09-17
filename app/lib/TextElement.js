@@ -4,23 +4,51 @@ export default class TextElement extends Element {
 	constructor(props) {
 		super({ ...props, type: 'text' });
 
-		this.width = 0;
-		this.height = 0;
-		this.content = props.content || 'Layout lab';
+		this.width = 100; //使用者設定的邊界
+		this.height = 100;
+		this.content = props.content || 'this is a very long text Some more to print!';
+		this.textAlign = 'left';
+		this.textBaseline = 'middle';
 		this.fontFamily = props.fontFamily || 'sans-serif';
 		this.fontSize = props.fontSize || 30; // height 當作初始 fontSize
+		this.lineHeight = 36;
 	}
 
 	drawElement(ctx) {
 		ctx.fillStyle = this.color.default;
 		ctx.font = `${this.fontSize}px ${this.fontFamily}`;
 
-		ctx.textAlign = 'center';
-		ctx.textBaseline = 'middle';
-		ctx.fillText(this.content, 0, 0);
+		ctx.textAlign = this.textAlign;
+		ctx.textBaseline = this.textBaseline;
 
-		// TEST
-		this.updateTextMetrics(ctx);
+		let words = this.content.split(' ');
+		let currentLine = 0;
+		let idx = 1;
+		while (words.length > 0 && idx <= words.length) {
+			const str = words.slice(0, idx).join(' ');
+			const strWidth = ctx.measureText(str).width;
+			if (strWidth > this.width) {
+				if (idx === 1) {
+					idx = 2; //避免第一圈 slice 沒東西
+				}
+				ctx.fillText(
+					words.slice(0, idx - 1).join(' '),
+					0,
+					this.lineHeight * currentLine,
+				);
+				currentLine++;
+				words = words.splice(idx - 1); //縮短原始文字
+				idx = 1; //換行後重新開始
+			}
+			else {
+				idx++;
+			}
+		}
+		ctx.fillText(
+			words.join(' '),
+			0,
+			this.lineHeight * currentLine,
+		);
 	}
 
 	drawControlHandlers(ctx) {
@@ -29,14 +57,8 @@ export default class TextElement extends Element {
 
 	isPointInside(px, py) {
 		this.selected =
-			px >= this.cx - this.width / 2 && px <=	this.cx + this.width / 2 &&
+			px >= this.cx - this.width / 2 && px <= this.cx + this.width / 2 &&
 			py >= this.cy - this.height / 2 && py <= this.cy + this.height / 2;
 		return this.selected;
-	}
-
-	updateTextMetrics(ctx) {
-		const metrics = ctx.measureText(this.content);
-		this.width = metrics.width;
-		this.height = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
 	}
 }

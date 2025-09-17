@@ -27,5 +27,10 @@ export const CONTROLHANDLER_TYPES = {
     ROTATE: 'rotate',
 };
 
-export const EL_MINIMUM_SIZE = 20;
+export const EL_MINIMUM_SIZE = 1;
 export const ROTATE_CONTROLHANDLER_OFFSET = 50; // Distance above the top-center control handler
+
+export const DEBUGGER_UI = {
+    COLOR: 'rgba(255, 0, 0, 0.5)',
+    LINE_WIDTH: 1.5,
+};

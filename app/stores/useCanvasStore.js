@@ -4,6 +4,7 @@ import { getAngleFromDegree, getDegreeFromAngle, getLocalCoords } from "~/lib/he
 const useCanvasStore = defineStore('canvas', {
 	state: () => ({
 		elements: [],
+		isDebugging: false,
 	}),
 	getters: {
 		selectedEl(state) {
@@ -103,17 +104,13 @@ const useCanvasStore = defineStore('canvas', {
 					break;
 
 				case CONTROLHANDLER_NAMES.ROTATE:
-					// 1. 把滑鼠座標轉到元素中心
-					// const dx = posX - cx;
-					// const dy = posY - cy;
-
-					// // 2. 把旋轉反轉回 local 座標系
-					// const localX = dx * Math.cos(-angle) - dy * Math.sin(-angle);
-					// const localY = dx * Math.sin(-angle) + dy * Math.cos(-angle);
-
-					// // 3. 計算新的旋轉角度
-					// const newAngleRad = Math.atan2(localY, localX);
-					// this.selectedEl.rotationDeg = (newAngleRad * 180 / Math.PI + 360) % 360;
+					// TODO: 會直接跳到 270度
+					const dx = posX - cx;
+					const dy = posY - cy;
+					const newAngleRad = Math.atan2(dy, dx);
+					const newAngleDeg = getDegreeFromAngle(newAngleRad);
+					console.log(newAngleDeg);
+					this.selectedEl.rotationDeg = newAngleDeg;
 					return;
 			}
 

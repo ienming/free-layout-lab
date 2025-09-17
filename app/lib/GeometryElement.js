@@ -1,6 +1,7 @@
 import Element from "./canvasElement";
-import { CONTROLHANDLER_NAMES, ROTATE_CONTROLHANDLER_OFFSET } from "~/constants/canvas";
+import { CONTROLHANDLER_NAMES, ROTATE_CONTROLHANDLER_OFFSET, DEBUGGER_UI } from "~/constants/canvas";
 import { getAngleFromDegree, getLocalCoords } from "./helper";
+import { useCanvasStore } from "#imports";
 
 export default class GeometryElement extends Element {
 	constructor(props) {
@@ -28,11 +29,15 @@ export default class GeometryElement extends Element {
 				0,
 				this.width / 2,
 				this.height / 2,
-				getAngleFromDegree(this.rotationDeg),
+				0, //這邊是 global 坐標系的旋轉，因為外層已經轉過，所以不用再轉
 				0,
 				2 * Math.PI
 			);
 			ctx.fill();
+		}
+
+		if (useCanvasStore().isDebugging) {
+			this.drawGuideLines(ctx);
 		}
 	}
 
@@ -96,5 +101,28 @@ export default class GeometryElement extends Element {
 			localX >= -this.width / 2 && localX <=	this.width / 2 &&
 			localY >= -this.height / 2 && localY <= this.height / 2;
 		return this.selected;
+	}
+
+	drawGuideLines(ctx) {
+		ctx.lineWidth = DEBUGGER_UI.LINE_WIDTH;
+		ctx.strokeStyle = DEBUGGER_UI.COLOR;
+		// Bounding
+		ctx.beginPath();
+		ctx.moveTo(-this.width / 2, -this.height / 2);
+		ctx.lineTo(this.width / 2, -this.height / 2);
+		ctx.lineTo(this.width / 2, this.height / 2);
+		ctx.lineTo(-this.width / 2, this.height / 2);
+		ctx.closePath();
+		ctx.stroke();
+		// Horizontal
+		ctx.beginPath();
+		ctx.moveTo(-this.width / 2, 0);
+		ctx.lineTo(this.width / 2, 0);
+		ctx.stroke();
+		// Vertical
+		ctx.beginPath();
+		ctx.moveTo(0, -this.height / 2);
+		ctx.lineTo(0, this.height / 2);
+		ctx.stroke();
 	}
 }

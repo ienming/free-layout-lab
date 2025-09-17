@@ -1,6 +1,9 @@
 <template>
 	<div class="control-panel">
 		Now selected: {{ canvasStore.selectedEl?.key || 'None' }}
+		<input
+			v-model="canvasStore.isDebugging"
+			type="checkbox" />
 		<div v-if="canvasStore.selectedEl">
 			<div v-if="canvasStore.selectedEl.type === 'rect'">
 				<label>
@@ -30,6 +33,15 @@
 						v-model="content"
 						type="text"
 						class="input" />
+				</label>
+				<label>
+					Width:{{ width }}
+					<input
+						v-model.number="width"
+						type="range"
+						min="10"
+						max="200"
+						class="input"/>
 				</label>
 				<label for="fontSize">
 					FontSize

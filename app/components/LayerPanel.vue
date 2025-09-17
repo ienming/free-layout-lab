@@ -8,7 +8,9 @@
                 class="layer"
                 :class="{'active': isLayerActive(layer.key)}"
                 @click="setToSelect(layer.key)">
-                <span class="layer-type">{{ layer.type === 'rect' ? '[R]' : '[T]' }}</span>
+                <span class="layer-type">
+                    [{{ getLayerIcon(layer.type) }}]
+                </span>
                 <span>{{ layer.key }}</span>
             </li>
         </ul>
@@ -30,13 +32,26 @@ function setToSelect(key) {
 function isLayerActive(key) {
     return canvasStore.selectedEl?.key === key;
 }
+
+function getLayerIcon(type) {
+    let icon;
+    if (type === 'rect') {
+        icon = 'R';
+    } else if (type === 'circle') {
+        icon = 'C';
+    } else if (type === 'text') {
+        icon = 'T';
+    }
+    return icon;
+}
 </script>
 
 <style lang="scss" scoped>
 .layer-panel {
     border-radius: 8px;
-    background-color: #fff;
-    border: 1px solid #efefef;
+    background-color: #222;
+    border: 1px solid #333;
+    color: #efefef;
     padding: 8px;
     position: fixed;
     top: 8px;
@@ -69,12 +84,12 @@ function isLayerActive(key) {
         gap: 4px;
 
         &:hover {
-            background-color: rgba(0, 0, 0, .05);
+            background-color: rgba(255, 255, 255, .1);
         }
 
         &.active {
-            background-color: rgba(0, 0, 0, .05);
-            box-shadow: 0 0 0 1px rgba(0, 0, 0, .15);
+            background-color: rgba(255, 255, 255, .1);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, .2);
         }
 
         .layer-type {
