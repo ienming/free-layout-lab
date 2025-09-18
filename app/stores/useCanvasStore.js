@@ -76,8 +76,8 @@ const useCanvasStore = defineStore('canvas', {
 				return;
 			}
 
-			const cx = this.selectedEl.cx;
-			const cy = this.selectedEl.cy;
+			const cx = this.selectedEl.x;
+			const cy = this.selectedEl.y;
 			const angle = getAngleFromDegree(this.selectedEl.rotationDeg);
 			const { localX, localY } = getLocalCoords(posX, posY, cx, cy, angle);
 

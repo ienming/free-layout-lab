@@ -48,40 +48,40 @@ export default class GeometryElement extends Element {
 		this.controlHandlers.forEach(handler => {
 			switch (handler.name) {
 				case CONTROLHANDLER_NAMES.TOP_LEFT:
-					handler.cx = -width / 2;
-					handler.cy = -height / 2;
+					handler.x = -width / 2;
+					handler.y = -height / 2;
 					break;
 				case CONTROLHANDLER_NAMES.TOP_CENTER:
-					handler.cx = 0;
-					handler.cy = -height / 2;
+					handler.x = 0;
+					handler.y = -height / 2;
 					break;
 				case CONTROLHANDLER_NAMES.TOP_RIGHT:
-					handler.cx = width / 2;
-					handler.cy = -height / 2;
+					handler.x = width / 2;
+					handler.y = -height / 2;
 					break;
 				case CONTROLHANDLER_NAMES.MIDDLE_LEFT:
-					handler.cx = -width / 2;
-					handler.cy = 0;
+					handler.x = -width / 2;
+					handler.y = 0;
 					break;
 				case CONTROLHANDLER_NAMES.MIDDLE_RIGHT:
-					handler.cx = width / 2;
-					handler.cy = 0;
+					handler.x = width / 2;
+					handler.y = 0;
 					break;
 				case CONTROLHANDLER_NAMES.BOTTOM_LEFT:
-					handler.cx = -width / 2;
-					handler.cy = height / 2;
+					handler.x = -width / 2;
+					handler.y = height / 2;
 					break;
 				case CONTROLHANDLER_NAMES.BOTTOM_CENTER:
-					handler.cx = 0;
-					handler.cy = height / 2;
+					handler.x = 0;
+					handler.y = height / 2;
 					break;
 				case CONTROLHANDLER_NAMES.BOTTOM_RIGHT:
-					handler.cx = width / 2;
-					handler.cy = height / 2;
+					handler.x = width / 2;
+					handler.y = height / 2;
 					break;
 				case CONTROLHANDLER_NAMES.ROTATE:
-					handler.cx = 0;
-					handler.cy = -height / 2 - ROTATE_CONTROLHANDLER_OFFSET;
+					handler.x = 0;
+					handler.y = -height / 2 - ROTATE_CONTROLHANDLER_OFFSET;
 					break;
 			}
 			handler.draw(ctx);
@@ -96,7 +96,7 @@ export default class GeometryElement extends Element {
 
 	isPointInside(px, py) {
 		const angle = getAngleFromDegree(this.rotationDeg);
-		const {localX, localY} = getLocalCoords(px, py, this.cx, this.cy, angle);
+		const {localX, localY} = getLocalCoords(px, py, this.x, this.y, angle);
 		this.selected =
 			localX >= -this.width / 2 && localX <=	this.width / 2 &&
 			localY >= -this.height / 2 && localY <= this.height / 2;

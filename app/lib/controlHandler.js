@@ -2,8 +2,8 @@ import { CONTROLHANDLER_TYPES, CONTROLHANDER_UI } from "~/constants/canvas";
 
 export default class ControlHandler {
     constructor({ x, y, type, name}) {
-        this.cx = x;
-        this.cy = y;
+        this.x = x;
+        this.y = y;
         this.type = type; // 'resize', 'rotate'
         this.name = name; // 'top-left', 'top-center', etc.
         this.size = CONTROLHANDER_UI.SIZE;
@@ -15,8 +15,8 @@ export default class ControlHandler {
         if (this.type === CONTROLHANDLER_TYPES.ROTATE) {
             ctx.beginPath();
             ctx.arc(
-                this.cx,
-                this.cy,
+                this.x,
+                this.y,
                 this.size / 2,
                 0,
                 Math.PI * 2,
@@ -25,8 +25,8 @@ export default class ControlHandler {
             ctx.closePath();
         } else {
             ctx.fillRect(
-                this.cx - this.size / 2,
-                this.cy - this.size / 2,
+                this.x - this.size / 2,
+                this.y - this.size / 2,
                 this.size,
                 this.size,
             );
@@ -34,8 +34,8 @@ export default class ControlHandler {
     }
 
     isPointInside(px, py) {
-        this.active = px >= this.cx - this.size / 2 && px <= this.cx + this.size / 2 &&
-            py >= this.cy - this.size / 2 && py <= this.cy + this.size / 2;
+        this.active = px >= this.x - this.size / 2 && px <= this.x + this.size / 2 &&
+            py >= this.y - this.size / 2 && py <= this.y + this.size / 2;
         if (this.active) console.log('isPointInside', this.name);
         return this.active;
     }

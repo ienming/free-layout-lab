@@ -5,8 +5,8 @@ export default class Element {
 	constructor({ key, type, x, y, color }) {
 		this.key = key || crypto.randomUUID();
 		this.type = type;		// 'text' | 'rect' | 'circle'
-		this.cx = x || CANVAS_UI.WIDTH / 2;
-		this.cy = y || CANVAS_UI.HEIGHT / 2;
+		this.x = x || CANVAS_UI.WIDTH / 2;
+		this.y = y || CANVAS_UI.HEIGHT / 2;
 		this.color = color || {
 			default: '#' + Math.floor(Math.random()*16777215).toString(16),
 		};
@@ -25,7 +25,7 @@ export default class Element {
 
 	draw(ctx) {
 		ctx.save();
-		ctx.translate(this.cx, this.cy);
+		ctx.translate(this.x, this.y);
 		ctx.rotate(getAngleFromDegree(this.rotationDeg));
 
 		this.drawElement(ctx);
@@ -65,7 +65,7 @@ export default class Element {
 		// 轉換成 element 中心點為原點的座標系
 		// 才能計算 control handler 正確位置
 		const angle = getAngleFromDegree(this.rotationDeg);
-		const {localX, localY} = getLocalCoords(px, py, this.cx, this.cy, angle);
+		const {localX, localY} = getLocalCoords(px, py, this.x, this.y, angle);
 
 		this.controlHandlers.forEach(handler => handler.isPointInside(localX, localY));
 	}

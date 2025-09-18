@@ -70,8 +70,8 @@ function onMouseDown(e) {
 	}
 
 	if (canvasStore.selectedEl) {
-		offsetX = px - canvasStore.selectedEl.cx;
-		offsetY = py - canvasStore.selectedEl.cy;
+		offsetX = px - canvasStore.selectedEl.x;
+		offsetY = py - canvasStore.selectedEl.y;
 		isElDragging = true;
 	}
 
@@ -87,8 +87,8 @@ function onMouseMove(e) {
 	if (isControlHandlerStartDragging) {
 		canvasStore.resizeSelectedEl(px, py);
 	} else if (isElDragging) {
-		canvasStore.selectedEl.cx = px - offsetX;
-		canvasStore.selectedEl.cy = py - offsetY;
+		canvasStore.selectedEl.x = px - offsetX;
+		canvasStore.selectedEl.y = py - offsetY;
 	}
 }
 

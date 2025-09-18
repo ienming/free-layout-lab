@@ -57,8 +57,8 @@ export default class TextElement extends Element {
 
 	isPointInside(px, py) {
 		this.selected =
-			px >= this.cx - this.width / 2 && px <= this.cx + this.width / 2 &&
-			py >= this.cy - this.height / 2 && py <= this.cy + this.height / 2;
+			px >= this.x - this.width / 2 && px <= this.x + this.width / 2 &&
+			py >= this.y - this.height / 2 && py <= this.y + this.height / 2;
 		return this.selected;
 	}
 }
